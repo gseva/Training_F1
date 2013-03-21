@@ -21,6 +21,8 @@ verificador sera el digito obtenido.
 
 
 def main():
+    """La funcion principal del programa, le hace preguntas al usuario
+    y llama a funciones dependiendo de lo ingresado"""
     entrada = None
     while True:
         entrada = raw_input("ingrese '1' para calcular cuil/cuit, '2' para verificar o q para salir:")
@@ -40,6 +42,8 @@ def main():
 
 
 def captar_errores(cuil, opcion):
+    """Verifica si el ingreso son numeros y
+    el correcto ingreso del CUIL o Numero+DNI"""
     try:
         int(cuil)
     except ValueError:
@@ -55,6 +59,9 @@ def captar_errores(cuil, opcion):
 
 
 def devolver_codigo(cuil, opcion):
+    """Calcula la ultima cifra (codigo) a partir de los diez
+    numeros dados. Verifica si se le pasaron 10 u 11 numeros y
+    luego calcula el codigo con los primeros 10 de la lista."""
     respuesta = captar_errores(cuil, opcion)
     if respuesta:
         return respuesta
@@ -86,6 +93,8 @@ def devolver_codigo(cuil, opcion):
 
 
 def verificar_cuil(cuil, opcion):
+    """Verifica si a los primeros 10 numeros del cuil pasado
+    les corresponde el ultimo numero (codigo)"""
     respuesta = devolver_codigo(cuil, opcion)
     if len(respuesta) == 1:
         if cuil.endswith(respuesta):

@@ -77,14 +77,11 @@ def devolver_codigo(cuil, opcion):
         valor_1 += int(cuil[i]) * verificacion[i]
         i += 1
     valor_2 = valor_1 % 11
-    valor_3 = 11 - valor_2
-    codigo = None
-    if valor_3 == 11:
+    codigo = 11 - valor_2
+    if codigo == 11:
         codigo = 0
-    elif valor_3 == 10:
+    elif codigo == 10:
         codigo = 9
-    else:
-        codigo = valor_3
     return str(codigo)
 
 

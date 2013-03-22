@@ -25,19 +25,23 @@ def main():
     y llama a funciones dependiendo de lo ingresado"""
     entrada = None
     while True:
-        entrada = raw_input("ingrese '1' para calcular cuil/cuit, '2' para verificar o q para salir:")
+        mensaje = "ingrese '1' para calcular cuil/cuit, "
+        mensaje += "'2' para verificar o 'q' para salir:"
+        entrada = raw_input(mensaje)
+        print '*' * len(mensaje)
         if entrada == "q":
             break
-        if entrada == "1":
-            cuil = raw_input("ingrese su numero seguido por su DNI:")
-            respuesta = devolver_codigo(cuil, "devolver")
+        elif entrada == "1":
+            respuesta = tomar_datos()
             if len(respuesta) == 1:
-                print "Su codigo es: "
-        if entrada == "2":
+                respuesta = "Su codigo es: " + respuesta
+        elif entrada == "2":
             cuil = raw_input("ingrese su CUIL:")
             respuesta = verificar_cuil(cuil, "verificar")
+        else:
+            continue
         print respuesta
-        print "*" * len(respuesta)
+        print "*" * len(mensaje)
     print "salu2"
 
 
@@ -48,7 +52,6 @@ def captar_errores(cuil, opcion):
         int(cuil)
     except ValueError:
         return "incorrecto, tienen que ser numeros"
-    print cuil
     if opcion == "verificar":
         if len(cuil) != 11:
             return "incorrecto, tiene que tener 11 digitos"
@@ -72,23 +75,16 @@ def devolver_codigo(cuil, opcion):
 
     while i < len(verificacion):
         valor_1 += int(cuil[i]) * verificacion[i]
-        print "int(cuil[i]): ", int(cuil[i]), "verificacion[i]: ", \
-                                verificacion[i], "valor_1: ", valor_1
         i += 1
-
     valor_2 = valor_1 % 11
-    print "valor_2: ", valor_2
     valor_3 = 11 - valor_2
-    print "valor_3: ", valor_3
     codigo = None
-
     if valor_3 == 11:
         codigo = 0
     elif valor_3 == 10:
         codigo = 9
     else:
         codigo = valor_3
-    print "codigo: ", codigo, "len(codigo):", len(str(codigo))
     return str(codigo)
 
 
@@ -102,6 +98,35 @@ def verificar_cuil(cuil, opcion):
         else:
             return "cuil incorrecto!"
     return respuesta
+
+
+def tomar_datos():
+    """Toma los datos del usuario y forma la string del cuil,
+    devuelve el codigo o la respuesta dek error"""
+    mensaje = ("ingrese su el CUIL/CUIT es de: \n'm' para mujer \n")
+    mensaje += ("'h' para hombre \n'e' para empresa")
+    cuil = ""
+    while not cuil:
+        genero = raw_input(mensaje)
+        if genero == 'm':
+            cuil += "27"
+        elif genero == 'h':
+            cuil += "20"
+        elif genero == 'e':
+            cuil += "30"
+        else:
+            print "ingreso incorrecto \n", "*" * 20
+    print cuil
+    while True:
+        dni = raw_input("ingrese su DNI:")
+        if len(dni) != 8:
+            print "DNI tiene que tener 8 cifras"
+            print "*" * 20
+        else:
+            cuil += dni
+            break
+    print cuil
+    return devolver_codigo(cuil, opcion="devolver")
 
 
 if __name__ == "__main__":

@@ -120,7 +120,7 @@ def tomar_datos():
             print "DNI tiene que tener 8 cifras"
             print "*" * 20
         else:
-            cuil += dni
+            cuil = "".join([cuil, dni])
             break
     print cuil
     return devolver_codigo(cuil, opcion="devolver")

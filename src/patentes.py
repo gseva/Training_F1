@@ -15,14 +15,14 @@ def main():
     while patente != "q":
         patente = raw_input(promt)
         print reemplazo_patente(patente.lower()), "\n",\
-            "*" * 20
+                "*" * 20
 
 
 def crear_diccionario():
     """Crea un diccionario asigandole un valor de la tabla
        a todos los caracteres low case ASCII. Hice esta funcion
        porque me daba fiaca escribir el diccionario a mano"""
-    lista = "14 01 00 16 05 02 19 09 24 07 21 08 04\
+    lista = "14 01 00 16 05 20 19 09 24 07 21 08 04\
              13 25 22 18 10 02 06 12 23 11 03 15 17"
     diccionario = {}
     i = 0

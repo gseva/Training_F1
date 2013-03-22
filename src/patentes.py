@@ -68,12 +68,13 @@ def reemplazo_patente(patente=""):
     """Verifica que la patente sea letras seguidas de numeros,
        y la convierte en una lista de enteros de 1 digito"""
     lista = []
-    pattern = re.compile("([a-zA-Z]+)([0-9]+)")
+    pattern = re.compile("^([a-zA-Z]{3})([0-9]{3})$")
     clave_separada = re.match(pattern, patente)
 
-    if not clave_separada or len(clave_separada.group(1)) + \
-            len(clave_separada.group(2)) != len(patente):
-        return "Patente invalida"
+    if not clave_separada:
+        clave_separada = re.match("^([a-zA-Z]{1})([0-9]{7})$", patente)
+        if not clave_separada:
+            return "Patente invalida"
     diccionario = crear_diccionario()
 
     for char in clave_separada.group(1):

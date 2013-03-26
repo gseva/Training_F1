@@ -67,29 +67,32 @@ for item in nodo_madre.lista_nodos:
 
 
 def list_to_node(lista, palabra, nodo):
-    print "mi lista es:", lista
-    print "estoy en nodo:", nodo
+#    print "mi lista es:", lista
+#    print "estoy en nodo:", nodo
     if len(lista) == 1:
         print "soy nodo:", nodo, "Y tengo palabra:", palabra
         nodo.agregar_palabra(palabra)
         return
-    item = lista.pop()
-    print "estoy con item:", item
+    item = lista[0]
+#    print "estoy con item:", item
     try:
         item = int(item)
     except:
         return
     if not nodo.lista_nodos[item]:
         nodo.agregar_nodo(Nodo(), item)
-    list_to_node(lista, palabra, nodo.lista_nodos[item])
+    list_to_node(lista[1:], palabra, nodo.lista_nodos[item])
 
 
 def txt_to_code():
     diccionario = []
     archivo = open("lista.txt", "r")
+    porcentaje = 0
     for n, line in enumerate(archivo.read().split("\n")):
-        if n % 5000 == 0:
-            print n
+        if n == 895:
+            n = 0
+            porcentaje += 1
+            print "terminado un " + str(porcentaje) + "%"
         diccionario.append(unicode(line.split(" ", 1)[0]))
     archivo.close
     lista_palabras = []
@@ -102,14 +105,15 @@ def txt_to_code():
             )
         lista_palabras.append(lista_items)
         list_to_node(lista_items, item, nodo_madre)
-    print lista_palabras
+#    print lista_palabras
     return lista_palabras
 
 
 def code_to_list(code, nodo):
     lista_code = list(code)
     print "listaza:", lista_code
-    item = lista_code.pop()
+    item = lista_code[0]
+    lista_code = lista_code[1:]
     print "item popeado:", item
     item = int(item)
     if not lista_code:
@@ -129,11 +133,6 @@ class Index(OOBTree):
 
 
 palabras = txt_to_code()
-code_to_list("234", nodo_madre)
-print nodo_madre.lista_nodos[4].lista_palabras
-print nodo_madre.lista_nodos[6].lista_palabras
-print nodo_madre.lista_nodos[8].lista_palabras
-
 while True:
     ingreso = raw_input("prompt (q para salir):")
     if ingreso == "q":

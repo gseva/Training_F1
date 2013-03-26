@@ -5,14 +5,12 @@ Created on 22/03/2013
 '''
 
 from Tkinter import *
-from key_handler import botones, procesar_texto, devolver_caracter
+from key_handler import key_handler
 
 
 class Application(Frame):
-    def say_hi(self):
-        print "hi there, everyone!"
 
-    def create_widgets(self):
+    def create_widgets(self, key_handler):
         self.palabra_actual = ""
         self.texto = ""
         self.text = Text(self, height=5, width=50,
@@ -20,7 +18,7 @@ class Application(Frame):
         self.text.grid(row=0, column=0, columnspan=5)
         r = 1
         c = 0
-        for b in botones:
+        for b in key_handler.botones:
             rel = 'ridge'
         #    cmd = lambda x=b: click(x)
             Button(self, text=b, height=2, width=5, relief=rel).grid(row=r,
@@ -36,10 +34,10 @@ class Application(Frame):
         self.text_palabras = Text(self, height=5, width=50, state=DISABLED)
         self.text_palabras.grid(row=11, column=0, columnspan=5)
 
-    def __init__(self, master=None):
+    def __init__(self, master=None, key_handler=None):
         Frame.__init__(self, master)
         self.pack()
-        self.create_widgets()
+        self.create_widgets(key_handler)
 
     def agregar_palabras(self, lista_palabras):
         self.text_palabras.configure(state='normal')
@@ -64,17 +62,17 @@ class Application(Frame):
         print "palabra_actual:", self.palabra_actual
         self.text.configure(state='disabled')
 
-
 root = Tk()
-app = Application(master=root)
+k = key_handler()
+app = Application(master=root, key_handler=k)
 
 
 def callback(event):
     print "clicked at", event.x, event.y, event.widget["text"]
-    lista_palabras, tecla = procesar_texto(event.widget["text"],
+    lista_palabras, tecla = k.procesar_texto(event.widget["text"],
                                            app.palabra_actual)
     app.agregar_palabras(lista_palabras)
-    texto = devolver_caracter(lista_palabras, app.palabra_actual, tecla)
+    texto = k.devolver_caracter(lista_palabras, app.palabra_actual, tecla)
     app.agregar_texto(texto)
 
 

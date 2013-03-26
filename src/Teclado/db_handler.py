@@ -8,10 +8,10 @@ Created on 26/03/2013
 from ZODB import FileStorage, DB
 from BTrees.OOBTree import OOBTree
 from persistent import Persistent
-
-storage = FileStorage.FileStorage('/tmp/test-filestorage.fs')
-db = DB(storage)
-conn = db.open()
+#
+#storage = FileStorage.FileStorage('/tmp/test-filestorage.fs')
+#db = DB(storage)
+#conn = db.open()
 
 teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
           4: ("4", "g", "h", "i"), 5: ("5", "j", "k", "l"),
@@ -35,13 +35,12 @@ class Nodo():
 
     def devolver_palabras(self):
         string = []
-        string.append(self.lista_palabras)
+        string.extend(self.lista_palabras)
         for item in self.lista_nodos:
             try:
-                string.append(item.devolver_palabras())
+                string.extend(item.devolver_palabras())
             except:
                 continue
-        print "devuelvo la ste lista de palabras:", string
         return string
 
 nodo_madre = Nodo()
@@ -107,25 +106,30 @@ def txt_to_code():
     return lista_palabras
 
 
-def code_to_string(code, nodo):
+def code_to_list(code, nodo):
     lista_code = list(code)
     print "listaza:", lista_code
     item = lista_code.pop()
     print "item popeado:", item
     item = int(item)
     if not lista_code:
-        return nodo.lista_nodos[item].devolver_palabras()
+        try:
+            return nodo.lista_nodos[item].devolver_palabras()
+        except:
+            return "No hay tal palabra"
     elif nodo.lista_nodos[item]:
-        return code_to_string((int(x) for x in lista_code), nodo.lista_nodos[item])
+        return code_to_list((str(x) for x in lista_code),
+                            nodo.lista_nodos[item])
     else:
-        return "No hay tal palabra"
+        return "Algo ha sido malo"
+
 
 class Index(OOBTree):
     pass
 
 
 palabras = txt_to_code()
-code_to_string("234", nodo_madre)
+code_to_list("234", nodo_madre)
 print nodo_madre.lista_nodos[4].lista_palabras
 print nodo_madre.lista_nodos[6].lista_palabras
 print nodo_madre.lista_nodos[8].lista_palabras
@@ -135,7 +139,9 @@ while True:
     if ingreso == "q":
         break
     try:
-        ingreso = int(ingreso)
+        int(ingreso)
     except:
         print "promt invalido"
-    print code_to_string(ingreso, nodo_madre)
+        continue
+    for item in code_to_list(ingreso, nodo_madre):
+        print item

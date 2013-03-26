@@ -19,8 +19,6 @@ teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
           8: ("8", "t", "u", "v"), 9: ("9", "w", "x", "y", "z"),
           0: "0", "#": " "}
 
-tupa = (1, 2, 3, 4, "5")
-
 
 class Nodo():
 
@@ -34,6 +32,17 @@ class Nodo():
 
     def agregar_nodo(self, nodo, index):
         self.lista_nodos[index] = nodo
+
+    def devolver_palabras(self):
+        string = []
+        string.append(self.lista_palabras)
+        for item in self.lista_nodos:
+            try:
+                string.append(item.devolver_palabras())
+            except:
+                continue
+        print "devuelvo la ste lista de palabras:", string
+        return string
 
 nodo_madre = Nodo()
 
@@ -58,15 +67,32 @@ for item in nodo_madre.lista_nodos:
         print item, "tiene palabra:", palabra
 
 
+def list_to_node(lista, palabra, nodo):
+    print "mi lista es:", lista
+    print "estoy en nodo:", nodo
+    if len(lista) == 1:
+        print "soy nodo:", nodo, "Y tengo palabra:", palabra
+        nodo.agregar_palabra(palabra)
+        return
+    item = lista.pop()
+    print "estoy con item:", item
+    try:
+        item = int(item)
+    except:
+        return
+    if not nodo.lista_nodos[item]:
+        nodo.agregar_nodo(Nodo(), item)
+    list_to_node(lista, palabra, nodo.lista_nodos[item])
+
 
 def txt_to_code():
     diccionario = []
-    lista = open("lista.txt", "r")
-    for n, line in enumerate(lista.read().split("\n")):
+    archivo = open("lista.txt", "r")
+    for n, line in enumerate(archivo.read().split("\n")):
         if n % 5000 == 0:
             print n
         diccionario.append(unicode(line.split(" ", 1)[0]))
-    lista.close
+    archivo.close
     lista_palabras = []
     for item in diccionario:
         lista_items = []
@@ -76,34 +102,40 @@ def txt_to_code():
                          if contenido.__contains__(char)]),
             )
         lista_palabras.append(lista_items)
+        list_to_node(lista_items, item, nodo_madre)
     print lista_palabras
     return lista_palabras
 
 
-def code_to_string(code, lista_palabras):
-    lista_strings = []
+def code_to_string(code, nodo):
     lista_code = list(code)
-    i = 0
-    print lista_palabras
-
-
-def list_to_node(lista):
-    for palabra in lista:
-        for i in len(palabra):
-            pass
-
-
-def devolver_palabras(list):
-    if len(list):
-        pass
-
+    print "listaza:", lista_code
+    item = lista_code.pop()
+    print "item popeado:", item
+    item = int(item)
+    if not lista_code:
+        return nodo.lista_nodos[item].devolver_palabras()
+    elif nodo.lista_nodos[item]:
+        return code_to_string((int(x) for x in lista_code), nodo.lista_nodos[item])
+    else:
+        return "No hay tal palabra"
 
 class Index(OOBTree):
     pass
 
 
 palabras = txt_to_code()
-code_to_string("234", palabras)
+code_to_string("234", nodo_madre)
 print nodo_madre.lista_nodos[4].lista_palabras
 print nodo_madre.lista_nodos[6].lista_palabras
 print nodo_madre.lista_nodos[8].lista_palabras
+
+while True:
+    ingreso = raw_input("prompt (q para salir):")
+    if ingreso == "q":
+        break
+    try:
+        ingreso = int(ingreso)
+    except:
+        print "promt invalido"
+    print code_to_string(ingreso, nodo_madre)

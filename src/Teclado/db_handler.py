@@ -6,12 +6,15 @@ Created on 26/03/2013
 
 
 from ZODB import FileStorage, DB
-from BTrees.OOBTree import OOBTree
-from persistent import Persistent
-#
-#storage = FileStorage.FileStorage('/tmp/test-filestorage.fs')
-#db = DB(storage)
-#conn = db.open()
+from nodo import Nodo
+import transaction
+import logging
+logging.basicConfig()
+
+storage = FileStorage.FileStorage('/tmp/test-filestorage0.fs')
+db = DB(storage)
+conn = db.open()
+root = conn.root()
 
 teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
           4: ("4", "g", "h", "i"), 5: ("5", "j", "k", "l"),
@@ -19,31 +22,8 @@ teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
           8: ("8", "t", "u", "v"), 9: ("9", "w", "x", "y", "z"),
           0: "0", "#": " "}
 
-
-class Nodo():
-
-    def __init__(self):
-        self.lista_nodos = [None, None, None, None, None,
-                   None, None, None, None, None]
-        self.lista_palabras = []
-
-    def agregar_palabra(self, palabra):
-        self.lista_palabras.append(palabra)
-
-    def agregar_nodo(self, nodo, index):
-        self.lista_nodos[index] = nodo
-
-    def devolver_palabras(self):
-        string = []
-        string.extend(self.lista_palabras)
-        for item in self.lista_nodos:
-            try:
-                string.extend(item.devolver_palabras())
-            except:
-                continue
-        return string
-
 nodo_madre = Nodo()
+root['madre'] = nodo_madre
 
 for tecla, contenido in teclas.items():
     print tecla, contenido
@@ -51,42 +31,38 @@ for tecla, contenido in teclas.items():
         int(tecla)
     except:
         break
-    nodo_madre.agregar_nodo(Nodo(), tecla)
     try:
         nodo_madre.agregar_nodo(Nodo(), tecla)
     except:
         print "problema con tecla:", tecla
 
     for item in contenido:
-        print nodo_madre.lista_nodos[tecla]
-        nodo_madre.lista_nodos[tecla].agregar_palabra(item)
+        print nodo_madre.nodos[tecla]
+        nodo_madre.nodos[tecla].agregar_palabra(item)
 
-for item in nodo_madre.lista_nodos:
-    for palabra in item.lista_palabras:
+for item in nodo_madre.nodos.values():
+    for palabra in item.palabras:
         print item, "tiene palabra:", palabra
 
 
 def list_to_node(lista, palabra, nodo):
-#    print "mi lista es:", lista
-#    print "estoy en nodo:", nodo
-    if len(lista) == 1:
+    if len(lista) == 0:
         print "soy nodo:", nodo, "Y tengo palabra:", palabra
         nodo.agregar_palabra(palabra)
         return
     item = lista[0]
-#    print "estoy con item:", item
     try:
         item = int(item)
     except:
         return
-    if not nodo.lista_nodos[item]:
+    if not nodo.nodos[item]:
         nodo.agregar_nodo(Nodo(), item)
-    list_to_node(lista[1:], palabra, nodo.lista_nodos[item])
+    list_to_node(lista[1:], palabra, nodo.nodos[item])
 
 
 def txt_to_code():
     diccionario = []
-    archivo = open("lista.txt", "r")
+    archivo = open("lista_bkp.txt", "r")
     porcentaje = 0
     for n, line in enumerate(archivo.read().split("\n")):
         if n == 895:
@@ -105,42 +81,11 @@ def txt_to_code():
             )
         lista_palabras.append(lista_items)
         list_to_node(lista_items, item, nodo_madre)
-#    print lista_palabras
     return lista_palabras
 
-
-def code_to_list(code, nodo):
-    lista_code = list(code)
-    print "listaza:", lista_code
-    item = lista_code[0]
-    lista_code = lista_code[1:]
-    print "item popeado:", item
-    item = int(item)
-    if not lista_code:
-        try:
-            return nodo.lista_nodos[item].devolver_palabras()
-        except:
-            return "No hay tal palabra"
-    elif nodo.lista_nodos[item]:
-        return code_to_list((str(x) for x in lista_code),
-                            nodo.lista_nodos[item])
-    else:
-        return "Algo ha sido malo"
-
-
-class Index(OOBTree):
-    pass
-
-
+print "cargando palabras"
 palabras = txt_to_code()
-while True:
-    ingreso = raw_input("prompt (q para salir):")
-    if ingreso == "q":
-        break
-    try:
-        int(ingreso)
-    except:
-        print "promt invalido"
-        continue
-    for item in code_to_list(ingreso, nodo_madre):
-        print item
+print "commiteando, no apagar"
+transaction.commit()
+print "listo"
+db.close()

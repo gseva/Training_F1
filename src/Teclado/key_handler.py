@@ -30,11 +30,11 @@ class key_handler():
 
     def __init__(self):
         self.codigo_actual = []
-        self.texto = ""
+        self.caracter_nuevo = ""
         self.palabras_mensaje = []
         self.palabras_posibles = []
         self.palabra_actual = ""
-        self.caracter_nuevo = ""
+        self.texto = ""
 
     def string_to_code(self, string):
         codigo = []
@@ -81,10 +81,6 @@ class key_handler():
             self.palabra_actual = ""
             self.texto += self.caracter_nuevo
             return self.texto
-#        elif len(self.caracter_nuevo) == 1:
-#            self.palabra_actual += self.caracter_nuevo
-#            self.texto += self.caracter_nuevo
-#            return self.texto
         else:
             if len(self.palabra_actual) >= 1:
                 self.texto = self.texto[:-len(self.palabra_actual)]
@@ -95,10 +91,16 @@ class key_handler():
     def procesar_texto(self, tecla):
         while True:
             if tecla.startswith("#"):
-                self.devolver_caracter(" ")
+                self.devolver_palabra(" ")
                 break
             elif tecla == "Borrar":
-                self.devolver_caracter("Borrar")
+                self.devolver_palabra("Borrar")
+                break
+            elif tecla == "Arriba":
+                self.devolver_palabra("Arriba")
+                break
+            elif tecla == "Abajo":
+                self.devolver_palabra("Abajo")
                 break
             if self.palabra_actual:
                 self.codigo_actual = self.string_to_code(self.palabra_actual)
@@ -107,24 +109,35 @@ class key_handler():
                 self.codigo_actual = tecla
             self.palabras_posibles = self.code_to_list(self.codigo_actual,
                                                        self.nodo_madre)
-            self.devolver_caracter(self.palabras_posibles)
+            self.devolver_palabra(self.palabras_posibles)
             break
         return self.palabras_posibles, self.formar_texto()
 
-    def devolver_caracter(self, data):
+    def devolver_palabra(self, data):
         self.caracter_nuevo = ""
         if data:
             if data == " ":
                 self.caracter_nuevo = " "
+                return
             elif data == "Borrar":
                 self.caracter_nuevo = "Borrar"
+                return
+            elif data == "Arriba":
+                if len(self.palabras_posibles) > -self.index:
+                    self.index -= 1
+                    print "restando index:", self.index
+            elif data == "Abajo":
+                if len(self.palabras_posibles) > self.index:
+                    self.index += 1
+                    print "sumando index:", self.index
             else:
-                l = len(self.codigo_actual)
-                for palabra in data:
-                    if len(palabra) >= l:
-                        self.caracter_nuevo = palabra[:l]
-                        return
-
+                self.index = 0
+            l = len(self.codigo_actual)
+            palabra = self.palabras_posibles[self.index]
+            print "agarro la palabra:", palabra
+            if len(palabra) >= l:
+                self.caracter_nuevo = palabra[:l]
+                return
         else:
             print "no hay data"
             tecla_actual = self.codigo_actual[-1]

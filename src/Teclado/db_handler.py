@@ -6,7 +6,7 @@ Created on 26/03/2013
 
 
 from ZODB import FileStorage, DB
-from nodo import Nodo
+from nodo import Nodo, list_to_node
 import transaction
 import logging
 logging.basicConfig()
@@ -45,28 +45,12 @@ for item in nodo_madre.nodos.values():
         print item, "tiene palabra:", palabra
 
 
-def list_to_node(lista, palabra, nodo):
-    if len(lista) == 0:
-#        print "soy nodo:", nodo, "Y tengo palabra:", palabra
-        if not nodo.palabras.__contains__(palabra):
-            nodo.agregar_palabra(palabra)
-        return
-    item = lista[0]
-    try:
-        item = int(item)
-    except:
-        return
-    if not nodo.nodos[item]:
-        nodo.agregar_nodo(Nodo(), item)
-    list_to_node(lista[1:], palabra, nodo.nodos[item])
-
-
 def txt_to_code():
     diccionario = []
     archivo = open("lista_bkp.txt", "r")
     porcentaje = 0
     for n, line in enumerate(archivo.read().split("\n")):
-        if n % 895 == 0:
+        if n % 859.18 == 0:
             n = 0
             porcentaje += 1
             print "terminado un " + str(porcentaje) + "%"

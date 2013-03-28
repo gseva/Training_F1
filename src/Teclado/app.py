@@ -8,6 +8,24 @@ from Tkinter import *
 from key_handler import key_handler
 
 
+class popup_word:
+
+    def __init__(self, parent):
+        top = self.top = Toplevel(parent)
+        Label(top, text="Ingrese palabra nueva").pack()
+        self.e = Entry(top)
+        self.e.pack(padx=5)
+
+        b = Button(top, text="OK", command=self.ok)
+        b.pack(pady=5)
+
+    def ok(self):
+        print "agregando palabra", self.e.get()
+        k.list_to_node(k.string_to_code(self.e.get()), self.e.get(),
+                     k.nodo_madre)
+        self.top.destroy()
+
+
 class Application(Frame):
 
     def create_widgets(self, key_handler):
@@ -58,8 +76,11 @@ app = Application(master=root, key_handler=k)
 
 def callback(event):
     if isinstance(event.widget, Button):
+        if event.widget['text'].split("\n")[0] == "Agregar":
+            d = popup_word(app)
+            app.wait_window(d.top)
+            return
         print event.widget["text"].split("\n")[0]
-        print "hola soy callback"
         lista_palabras, texto = k.procesar_texto(event.widget["text"].split("\n")[0])
         app.agregar_palabras(lista_palabras)
         app.agregar_texto(texto)

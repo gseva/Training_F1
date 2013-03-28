@@ -1,17 +1,18 @@
 '''
-Created on 26/03/2013
+Created on 28/03/2013
 
 @author: sebastiang
 '''
 
 
 from ZODB import FileStorage, DB
-from nodo import Nodo
+from nodo_prueba import Nodo
 import transaction
 import logging
 logging.basicConfig()
 
-storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
+
+storage = FileStorage.FileStorage('/tmp/test-filestorage13.fs')
 db = DB(storage)
 conn = db.open()
 root = conn.root()
@@ -22,8 +23,8 @@ teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
           8: ("8", "t", "u", "v"), 9: ("9", "w", "x", "y", "z"),
           0: "0", "#": " "}
 
-nodo_madre = Nodo()
-root['madre'] = nodo_madre
+nodo_madre = Nodo("madre")
+root[nodo_madre.name] = nodo_madre
 
 for tecla, contenido in teclas.items():
     print tecla, contenido
@@ -32,15 +33,15 @@ for tecla, contenido in teclas.items():
     except:
         break
     try:
-        nodo_madre.agregar_nodo(Nodo(), tecla)
+        root["madre"][tecla] = Nodo(tecla)
     except:
         print "problema con tecla:", tecla
 
     for item in contenido:
-        print nodo_madre.nodos[tecla]
-        nodo_madre.nodos[tecla].agregar_palabra(item)
+        print root["madre"][tecla]
+        root["madre"][tecla].agregar_palabra(item)
 
-for item in nodo_madre.nodos.values():
+for item in root["madre"].values():
     for palabra in item.palabras:
         print item, "tiene palabra:", palabra
 
@@ -56,15 +57,14 @@ def list_to_node(lista, palabra, nodo):
         item = int(item)
     except:
         return
-    if not nodo.nodos[item]:
-        nodo.agregar_nodo(Nodo(), item)
-    list_to_node(lista[1:], palabra, nodo.nodos[item])
+    if not nodo.get(item):
+        nodo.agregar_nodo(Nodo(item))
+    list_to_node(lista[1:], palabra, nodo.get(item))
 
 
 def txt_to_code():
     diccionario = []
-    archivo = open("lista_bkp.txt", "r")
-    porcentaje = 0
+    archivo = open("lista.txt", "r")
     for n, line in enumerate(archivo.read().split("\n")):
         diccionario.append(unicode(line.split(" ", 1)[0]))
     archivo.close
@@ -86,4 +86,47 @@ palabras = txt_to_code()
 print "commiteando, no apagar"
 transaction.commit()
 print "listo"
+
+
+def code_to_list(code, nodo):
+    lista_code = list(code)
+    print "listaza:", lista_code
+    item = lista_code[0]
+    lista_code = lista_code[1:]
+    print "item popeado:", item
+    item = int(item)
+    if not lista_code:
+#        try:
+        return nodo[item].devolver_palabras()
+#        except:
+#            return ["No hay tal palabra"]
+    elif nodo[item]:
+        return code_to_list((str(x) for x in lista_code),
+                            nodo[item])
+    else:
+        return ["Algo ha sido malo"]
+
+#start = time.time()
+#for item in code_to_list("2", nodo_madre):
+#    print item
+#elapsed = (time.time() - start)
+#start2 = time.time()
+#for item in code_to_list("2", nodo_madre):
+#    print item
+#elapsed2 = (time.time() - start2)
+#print "time:", elapsed
+#print "time2", elapsed2
+
+while True:
+    ingreso = raw_input("codigo de cifras (q para salir):")
+    if ingreso == "q":
+        break
+    try:
+        int(ingreso)
+    except:
+        print "promt invalido"
+        continue
+    for item in code_to_list(ingreso, nodo_madre):
+        print item
+
 db.close()

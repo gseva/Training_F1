@@ -24,7 +24,7 @@ class Nodo(Persistent):
     def devolver_palabras(self):
         string = []
         string.extend(self.palabras)
-        for item in self.nodos.values():
+        for item in self.values():
             try:
                 string.extend(item.devolver_palabras())
             except:

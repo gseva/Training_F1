@@ -81,7 +81,10 @@ def callback(event):
             app.wait_window(d.top)
             return
         print event.widget["text"].split("\n")[0]
-        lista_palabras, texto = k.procesar_texto(event.widget["text"].split("\n")[0])
+        if event.widget['text'] == "Enviar":
+            d = 
+        lista_palabras, texto = k.procesar_texto(event.widget["text"]
+                                                      .split("\n")[0])
         app.agregar_palabras(lista_palabras)
         app.agregar_texto(texto)
 

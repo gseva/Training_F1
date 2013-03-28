@@ -7,7 +7,7 @@ Created on 26/03/2013
 from ZODB import FileStorage, DB
 from nodo import Nodo
 
-storage = FileStorage.FileStorage('/tmp/test-filestorage0.fs')
+storage = FileStorage.FileStorage('/tmp/test-filestorage4.fs')
 db = DB(storage)
 conn = db.open()
 root = conn.root()

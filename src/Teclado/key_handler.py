@@ -4,66 +4,128 @@ Created on 25/03/2013
 @author: sebastiang
 '''
 from random import choice
+from ZODB import FileStorage, DB
+#from nodo import Nodo
 
 
 class key_handler():
+
+    storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
+    db = DB(storage)
+    conn = db.open()
+    root = conn.root()
+
+    nodo_madre = root['madre']
 
     teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
               4: ("4", "g", "h", "i"), 5: ("5", "j", "k", "l"),
               6: ("6", "m", "n", "o"), 7: ("7", "p", "q", "r", "s"),
               8: ("8", "t", "u", "v"), 9: ("9", "w", "x", "y", "z"),
-              0: "0", "#": "espacio"}
+              0: "0"}
 
     botones = ["1", "2\nabc", "3\ndef", "4\nghi", "5\njkl", "6\nmno",
                "7\npqrs", "8\ntuv", "9\nwxyz", "0", "#\nespacio", "Enviar",
-               "Borrar"]
-
-#    diccionario = ["hola", "como", "estas", "amigo", "soy", "todo",
-#                  "un", "campeon", "volvi", "del", "super", "que",
-#                  "paso", "programo", "en", "python", "por", "helado",
-#                  "actualmente", "porque", "soy", "hindu", "buenas"]
-
-    diccionario = []
-
-    global _tecla_actual
+               "Borrar", "Arriba", "Abajo"]
 
     def __init__(self):
-        lista = open("lista.txt", "r")
-        for line in lista.read().split("\n"):
-            self.diccionario.append(unicode(line.split(" ", 1)[0]))
-        print self.diccionario
-        lista.close
+        self.codigo_actual = []
+        self.texto = ""
+        self.palabras_mensaje = []
+        self.palabras_posibles = []
+        self.palabra_actual = ""
+        self.caracter_nuevo = ""
 
-    def procesar_texto(self, ingreso, palabra_actual):
-        lista_palabras = []
-        valor = ""
-        if ingreso.startswith("#"):
-            return " ", " "
-        if ingreso == "Borrar":
-            return "Borrar", "Borrar"
-        for part in ingreso.split("\n"):
-            valor += part
-            print "valor: ", valor
-        for palabra in self.diccionario:
-            for char in valor:
-                pedazo = palabra_actual + char
-                if palabra.startswith(pedazo):
-                    lista_palabras.append(palabra)
-#        print "sorted(lista_palabras):", sorted(lista_palabras)
-        return lista_palabras, valor
+    def string_to_code(self, string):
+        codigo = []
+        for char in string:
+            codigo.append("".join([str(tecla) for tecla, contenido \
+                         in self.teclas.items() \
+                         if contenido.__contains__(char)]))
+        return codigo
 
-    def devolver_caracter(self, lista_palabras, palabra_actual, tecla):
-        if lista_palabras:
-            if lista_palabras == " ":
-                return " "
-            elif lista_palabras == "Borrar":
-                return "Borrar"
-            else:
-                l = len(palabra_actual)
-                return lista_palabras[0][l:l + 1]
-        else:
-            print "tecla_actual: ", tecla
+    def code_to_list(self, codigo, nodo):
+        item = codigo[0]
+        codigo = codigo[1:]
+        item = int(item)
+        if not codigo:
             try:
-                return tecla[choice(range(1, 4, 1))]
+                return nodo.nodos[item].devolver_palabras()
             except:
-                return tecla[0]
+                return None  #["No hay tal palabra"]
+        elif nodo.nodos[item]:
+            return self.code_to_list(codigo,
+                                nodo.nodos[item])
+        else:
+            return None  #["Algo ha sido malo"]
+
+    def formar_texto(self):
+        if self.caracter_nuevo == "Borrar":
+            if not self.texto:
+                return ""
+            else:
+                try:
+                    self.palabra_actual = self.palabra_actual[:-1]
+                except:
+                    pass
+                if self.texto[-1] == " ":
+                    try:
+                        self.palabra_actual = self.palabras_mensaje.pop()
+                    except:
+                        pass
+                self.texto = self.texto[:-1]
+                return self.texto
+        elif self.caracter_nuevo == " ":
+            self.palabras_mensaje.append(self.palabra_actual)
+            self.palabra_actual = ""
+            self.texto += self.caracter_nuevo
+            return self.texto
+        else:
+            if len(self.palabra_actual) >= 1:
+                self.texto = self.texto[:-len(self.palabra_actual)]
+            self.palabra_actual = self.caracter_nuevo
+            self.texto += self.palabra_actual
+            return self.texto
+
+    def procesar_texto(self, tecla):
+        while True:
+            if tecla.startswith("#"):
+                self.devolver_caracter(" ")
+                break
+            elif tecla == "Borrar":
+                self.devolver_caracter("Borrar")
+                break
+            if self.palabra_actual:
+                self.codigo_actual = self.string_to_code(self.palabra_actual)
+                self.codigo_actual.extend([str(tecla)])
+            else:
+                self.codigo_actual = tecla
+            self.palabras_posibles = self.code_to_list(self.codigo_actual,
+                                                       self.nodo_madre)
+            self.devolver_caracter(self.palabras_posibles)
+            break
+        return self.palabras_posibles, self.formar_texto()
+
+    def devolver_caracter(self, data):
+        self.caracter_nuevo = ""
+        if data:
+            if data == " ":
+                self.caracter_nuevo = " "
+            elif data == "Borrar":
+                self.caracter_nuevo = "Borrar"
+            else:
+                l = len(self.codigo_actual)
+                for palabra in data:
+                    if len(palabra) >= l:
+                        self.caracter_nuevo = palabra[:l]
+                        return
+
+        else:
+            tecla_actual = self.codigo_actual[-1]
+            try:
+                self.caracter_nuevo = choice(self.teclas.get
+                                            (int(tecla_actual)))
+            except:
+                self.caracter_nuevo = self.teclas.get(tecla_actual)
+
+    def devolver_texto(self):
+        pass

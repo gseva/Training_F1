@@ -11,7 +11,7 @@ import transaction
 import logging
 logging.basicConfig()
 
-storage = FileStorage.FileStorage('/tmp/test-filestorage0.fs')
+storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
 db = DB(storage)
 conn = db.open()
 root = conn.root()
@@ -47,8 +47,9 @@ for item in nodo_madre.nodos.values():
 
 def list_to_node(lista, palabra, nodo):
     if len(lista) == 0:
-        print "soy nodo:", nodo, "Y tengo palabra:", palabra
-        nodo.agregar_palabra(palabra)
+#        print "soy nodo:", nodo, "Y tengo palabra:", palabra
+        if not nodo.palabras.__contains__(palabra):
+            nodo.agregar_palabra(palabra)
         return
     item = lista[0]
     try:
@@ -65,7 +66,7 @@ def txt_to_code():
     archivo = open("lista_bkp.txt", "r")
     porcentaje = 0
     for n, line in enumerate(archivo.read().split("\n")):
-        if n == 895:
+        if n % 895 == 0:
             n = 0
             porcentaje += 1
             print "terminado un " + str(porcentaje) + "%"

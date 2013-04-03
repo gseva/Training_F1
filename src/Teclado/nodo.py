@@ -21,12 +21,17 @@ class Nodo(Persistent):
         self.nodos[index] = nodo
         self._p_changed = True
 
-    def devolver_palabras(self):
+    def devolver_palabras(self, numero_de_llamadas=0):
+        inc = 1
+        if numero_de_llamadas == -1:
+            inc = 0
         string = []
         string.extend(self.palabras)
+        if numero_de_llamadas == 4:
+            return string
         for item in self.nodos.values():
             try:
-                string.extend(item.devolver_palabras())
+                string.extend(item.devolver_palabras(numero_de_llamadas + inc))
             except:
                 continue
         return string

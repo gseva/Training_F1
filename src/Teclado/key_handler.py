@@ -50,7 +50,10 @@ class key_handler():
         item = int(item)
         if not codigo:
             try:
-                return nodo.nodos[item].devolver_palabras()
+                palabras = nodo.nodos[item].devolver_palabras()
+                if not palabras:
+                    palabras = nodo.nodos[item].devolver_palabras(-1)
+                return palabras
             except:
                 print "no encontre la palabra"
                 return None  #["No hay tal palabra"]

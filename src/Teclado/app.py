@@ -6,6 +6,7 @@ Created on 22/03/2013
 
 from Tkinter import *
 from key_handler import key_handler
+import tkMessageBox
 
 
 class popup_word:
@@ -81,10 +82,11 @@ def callback(event):
             app.wait_window(d.top)
             return
         print event.widget["text"].split("\n")[0]
-        if event.widget['text'] == "Enviar":
-            d = 
         lista_palabras, texto = k.procesar_texto(event.widget["text"]
                                                       .split("\n")[0])
+        if event.widget['text'] == "Enviar":
+            msg = tkMessageBox.showinfo("Enviado!", texto)
+            texto = ""
         app.agregar_palabras(lista_palabras)
         app.agregar_texto(texto)
 

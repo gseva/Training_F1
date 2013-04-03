@@ -11,7 +11,7 @@ import transaction
 
 class key_handler():
 
-    storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
+    storage = FileStorage.FileStorage('/tmp/test-filestorage11.fs')
     db = DB(storage)
     conn = db.open()
     root = conn.root()
@@ -76,6 +76,14 @@ class key_handler():
                         pass
                 self.texto = self.texto[:-1]
                 return self.texto
+        elif self.caracter_nuevo == "Enviar":
+            if not self.texto:
+                texto_a_enviar = "No hay texto para enviar"
+            else:
+                texto_a_enviar = self.texto
+                self.texto = ""
+            self.palabras_posibles = []
+            return texto_a_enviar
         elif self.caracter_nuevo == " ":
             self.palabras_mensaje.append(self.palabra_actual)
             self.palabra_actual = ""
@@ -102,6 +110,9 @@ class key_handler():
             elif tecla == "Abajo":
                 self.devolver_palabra("Abajo")
                 break
+            elif tecla == "Enviar":
+                self.devolver_palabra("Enviar")
+                break
             if self.palabra_actual:
                 self.codigo_actual = self.string_to_code(self.palabra_actual)
                 self.codigo_actual.extend([str(tecla)])
@@ -121,6 +132,9 @@ class key_handler():
                 return
             elif data == "Borrar":
                 self.caracter_nuevo = "Borrar"
+                return
+            elif data == "Enviar":
+                self.caracter_nuevo = "Enviar"
                 return
             elif data == "Arriba":
                 if len(self.palabras_posibles) > -self.index:

@@ -11,7 +11,7 @@ import transaction
 import logging
 logging.basicConfig()
 
-storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
+storage = FileStorage.FileStorage('/tmp/test-filestorage11.fs')
 db = DB(storage)
 conn = db.open()
 root = conn.root()

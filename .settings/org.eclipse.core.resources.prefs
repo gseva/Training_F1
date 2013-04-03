@@ -2,3 +2,4 @@ eclipse.preferences.version=1
 encoding//src/Teclado/app.py=latin1
 encoding//src/Teclado/db_handler.py=latin1
 encoding//src/Teclado/key_handler.py=latin1
+encoding//src/Teclado/nodo.py=latin1

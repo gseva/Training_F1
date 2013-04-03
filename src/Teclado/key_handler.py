@@ -1,8 +1,10 @@
+# -*- coding: latin-1 -*-
 '''
 Created on 25/03/2013
 
 @author: sebastiang
 '''
+
 from random import choice
 from ZODB import FileStorage, DB
 from nodo import Nodo
@@ -11,17 +13,18 @@ import transaction
 
 class key_handler():
 
-    storage = FileStorage.FileStorage('/tmp/test-filestorage11.fs')
+    storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
     db = DB(storage)
     conn = db.open()
     root = conn.root()
 
     nodo_madre = root['madre']
 
-    teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
-              4: ("4", "g", "h", "i"), 5: ("5", "j", "k", "l"),
-              6: ("6", "m", "n", "o"), 7: ("7", "p", "q", "r", "s"),
-              8: ("8", "t", "u", "v"), 9: ("9", "w", "x", "y", "z"),
+    teclas = {1: "1", 2: ("2", "a", "b", "c", "á"),
+              3: ("3", "d", "e", "f", "é"),
+              4: ("4", "g", "h", "i", "í"), 5: ("5", "j", "k", "l"),
+              6: ("6", "m", "n", "o", "ó", "ñ"), 7: ("7", "p", "q", "r", "s"),
+              8: ("8", "t", "u", "v", "ú", "ü"), 9: ("9", "w", "x", "y", "z"),
               0: "0"}
 
     botones = ["1", "2\nabc", "3\ndef", "4\nghi", "5\njkl", "6\nmno",

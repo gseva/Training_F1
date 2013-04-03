@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 '''
 Created on 26/03/2013
 
@@ -11,15 +12,16 @@ import transaction
 import logging
 logging.basicConfig()
 
-storage = FileStorage.FileStorage('/tmp/test-filestorage11.fs')
+storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
 db = DB(storage)
 conn = db.open()
 root = conn.root()
 
-teclas = {1: "1", 2: ("2", "a", "b", "c"), 3: ("3", "d", "e", "f"),
-          4: ("4", "g", "h", "i"), 5: ("5", "j", "k", "l"),
-          6: ("6", "m", "n", "o"), 7: ("7", "p", "q", "r", "s"),
-          8: ("8", "t", "u", "v"), 9: ("9", "w", "x", "y", "z"),
+teclas = {1: "1", 2: ("2", "a", "b", "c", "á"),
+          3: ("3", "d", "e", "f", "é"),
+          4: ("4", "g", "h", "i", "í"), 5: ("5", "j", "k", "l"),
+          6: ("6", "m", "n", "o", "ó", "ñ"), 7: ("7", "p", "q", "r", "s"),
+          8: ("8", "t", "u", "v", "ú", "ü"), 9: ("9", "w", "x", "y", "z"),
           0: "0", "#": " "}
 
 nodo_madre = Nodo()
@@ -61,15 +63,19 @@ def list_to_node(lista, palabra, nodo):
     list_to_node(lista[1:], palabra, nodo.nodos[item])
 
 
-def txt_to_code():
+def txt_to_code(archivo="lista_bkp.txt"):
     diccionario = []
-    archivo = open("lista_bkp.txt", "r")
-    porcentaje = 0
+    archivo = open(archivo, "r")
     for n, line in enumerate(archivo.read().split("\n")):
-        diccionario.append(unicode(line.split(" ", 1)[0]))
+#        diccionario.append(line.split(" ", 1)[0].decode("utf-8"))
+        for item in line.split(" "):
+            diccionario.append(item.decode("utf-8"))
     archivo.close
     lista_palabras = []
-    for item in diccionario:
+    for n, item in enumerate(diccionario):
+        if n % 3000 == 0:
+            transaction.commit()
+            print "commiteando"
         lista_items = []
         for char in item:
             lista_items.append(

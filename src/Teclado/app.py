@@ -31,25 +31,30 @@ class popup_word:
 class Application(Frame):
 
     def create_widgets(self, key_handler):
-        self.text = Text(self, height=5, width=50,
-                         bg="yellow", wrap=WORD, state=DISABLED)
-        self.text.grid(row=0, column=0, columnspan=5)
-        r = 1
-        c = 0
-        for b in key_handler.botones:
+        self.text = Text(self, height=5, width=50, bg="yellow",
+                         wrap=WORD, state=DISABLED)
+        self.text.grid(row=0, column=0, columnspan=2, rowspan=4,
+                       sticky=E + W + S + N, padx=10)
+
+        r = 0
+        c = 2
+        for index in range(0, (len(key_handler.botones) - 2)):
             rel = 'ridge'
-            Button(self, text=b, height=2, width=5, relief=rel).grid(row=r,
-                                                                     column=c)
+            Button(self, text=key_handler.botones[index], height=2,
+                   width=5, relief=rel).grid(row=r, column=c, sticky=E)
             c += 1
-            if c > 2:
-                c = 0
+            if c > 4:
+                c = 2
                 r += 1
-        r += 1
-        self.label = Label(self, text="Posibles palabras", padx=5, pady=5)
-        self.label.grid(row=10, column=0, columnspan=5)
-        r += 1
-        self.text_palabras = Text(self, height=5, width=50, state=DISABLED)
-        self.text_palabras.grid(row=11, column=0, columnspan=5)
+        b = Button(self, text=key_handler.botones[14], height=2, width=10)
+        b.grid(row=6, column=3, columnspan=2, sticky=E + S)
+        b = Button(self, text=key_handler.botones[15], height=2, width=10)
+        b.grid(row=7, column=3, columnspan=2, sticky=E + S)
+        self.label = Label(self, text="Posibles palabras")
+        self.label.grid(row=5, column=0, sticky=W)
+        self.text_palabras = Text(self, height=7, width=50, state=DISABLED)
+        self.text_palabras.grid(row=6, column=0, columnspan=2, rowspan=2,
+                                sticky=E + W + S + N, padx=10)
 
     def __init__(self, master=None, key_handler=None):
         Frame.__init__(self, master)
@@ -92,8 +97,9 @@ def callback(event):
         app.agregar_texto(texto)
 
 
-app.master.geometry("500x500")
-app.master.maxsize(500, 500)
+#app.master.geometry("500x500")
+app.master.maxsize(630, 370)
+app.master.minsize(630, 370)
 app.master.bind("<Button-1>", callback)
 root.mainloop()
 root.destroy()

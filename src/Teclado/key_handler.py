@@ -28,8 +28,8 @@ class key_handler():
               0: "0"}
 
     botones = ["1", "2\nabc", "3\ndef", "4\nghi", "5\njkl", "6\nmno",
-               "7\npqrs", "8\ntuv", "9\nwxyz", "0", "#\nespacio", "Enviar",
-               "Borrar", "Arriba", "Abajo", "Agregar\nPalabra"]
+               "7\npqrs", "8\ntuv", "9\nwxyz", "0", "#\nespacio",
+               "Borrar", "Arriba", "Abajo", "Agregar\nPalabra", "Enviar"]
 
     def __init__(self):
         self.codigo_actual = []

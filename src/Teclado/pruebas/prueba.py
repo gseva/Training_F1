@@ -5,9 +5,9 @@ Created on 26/03/2013
 '''
 
 from ZODB import FileStorage, DB
-from nodo_prueba import Nodo
+from nodo import Nodo
 
-storage = FileStorage.FileStorage('/tmp/test-filestorage.fs')
+storage = FileStorage.FileStorage('/tmp/test-filestorage10.fs')
 db = DB(storage)
 conn = db.open()
 root = conn.root()

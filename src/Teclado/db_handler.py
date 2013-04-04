@@ -45,6 +45,9 @@ db = DB(storage)
 conn = db.open()
 root = conn.root()
 
+cantidad_nodos = 0
+cantidad_palabras = 0
+
 teclas = {1: "1", 2: ("2", "a", "b", "c", "á"),
           3: ("3", "d", "e", "f", "é"),
           4: ("4", "g", "h", "i", "í"), 5: ("5", "j", "k", "l"),
@@ -52,8 +55,11 @@ teclas = {1: "1", 2: ("2", "a", "b", "c", "á"),
           8: ("8", "t", "u", "v", "ü", "ú"), 9: ("9", "w", "x", "y", "z"),
           0: "0", "#": " "}
 
-nodo_madre = Nodo()
-root['madre'] = nodo_madre
+if not 'madre' in root.keys():
+    nodo_madre = Nodo()
+    root['madre'] = nodo_madre
+else:
+    nodo_madre = root['madre']
 
 for tecla, contenido in teclas.items():
     print tecla, contenido
@@ -62,7 +68,8 @@ for tecla, contenido in teclas.items():
     except:
         break
     try:
-        nodo_madre.agregar_nodo(Nodo(), tecla)
+        if not nodo_madre.nodos[tecla]:
+            nodo_madre.agregar_nodo(Nodo(), tecla)
     except:
         print "problema con tecla:", tecla
 
@@ -82,6 +89,7 @@ def list_to_node(lista, palabra, nodo):
     la lista, a la lista de nodo actual se le agrega la palabra.
     """
 
+    global cantidad_nodos
     if len(lista) == 0:
         if not nodo.palabras.__contains__(palabra):
             nodo.agregar_palabra(palabra)
@@ -93,6 +101,8 @@ def list_to_node(lista, palabra, nodo):
     except:
         return
     if not nodo.nodos[item]:
+        print "Creo un nuevo nodo"
+        cantidad_nodos += 1
         nodo.agregar_nodo(Nodo(), item)
     list_to_node(lista[1:], palabra, nodo.nodos[item])
 
@@ -108,6 +118,7 @@ def txt_to_code(archivo="lista_bkp.txt"):
     Devuelve la lista de codigos del diccionario.
     """
 
+    global cantidad_palabras
     diccionario = []
     archivo = open(archivo, "r")
     for n, line in enumerate(archivo.read().split("\n")):
@@ -127,12 +138,13 @@ def txt_to_code(archivo="lista_bkp.txt"):
             )
         lista_palabras.append(lista_items)
         list_to_node(lista_items, item, nodo_madre)
+        cantidad_palabras += 1
     return lista_palabras
-
 
 print "cargando palabras"
 palabras = txt_to_code()
 print "commiteando, no apagar"
 transaction.commit()
+print "nodos creados:", cantidad_nodos, "palabras guardadas:", cantidad_palabras
 print "listo"
 db.close()

@@ -155,10 +155,12 @@ class key_handler():
 
     def devolver_palabra(self, data):
         """
-        Devuelve los primeros caracteres de una palabra eligida por el index.
+        Devuelve los primeros caracteres de la primera palabra en la lista de
+        palabras posibles.
         La cantidad de caracteres corresponde a la cantidad de elementos en
-        la lista de codigo actual. El index es cambiado por comandos 'Abajo'
-        y 'Arriba'. Si data es un espacio u otro comando, no se devuelve nada.
+        la lista de codigo actual. La lista gira, cambiando la primera y la
+        ultima palabra por comandos 'Abajo' y 'Arriba'.
+        Si data es un espacio u otro comando, no se devuelve nada.
 
         Por ejemplo:
             si el codigo actual es [2, 2, 2, 3, 3, 6], la palabra devuelta
@@ -180,17 +182,11 @@ class key_handler():
                 self.caracter_nuevo = "Enviar"
                 return
             elif data == "Arriba":
-                if len(self.palabras_posibles) > -self.index:
-                    self.index -= 1
-                    print "restando index:", self.index
+                self.palabras_posibles.append(self.palabras_posibles.pop(0))
             elif data == "Abajo":
-                if len(self.palabras_posibles) > self.index:
-                    self.index += 1
-                    print "sumando index:", self.index
-            else:
-                self.index = 0
+                self.palabras_posibles.insert(0, self.palabras_posibles.pop())
             l = len(self.codigo_actual)
-            palabra = self.palabras_posibles[self.index]
+            palabra = self.palabras_posibles[0]
             print "agarro la palabra:", palabra
             if len(palabra) >= l:
                 self.caracter_nuevo = palabra[:l]

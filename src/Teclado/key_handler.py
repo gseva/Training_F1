@@ -34,8 +34,8 @@ class key_handler():
               8: ("8", "t", "u", "v", "ü", "ú"), 9: ("9", "w", "x", "y", "z"),
               0: "0"}
 
-    botones = ["1", "2\nabc", "3\ndef", "4\nghi", "5\njkl", "6\nmno",
-               "7\npqrs", "8\ntuv", "9\nwxyz", "0", "#\nespacio",
+    botones = ["1", u"2\nabcá", u"3\ndefé", u"4\nghií", u"5\njkl", u"6\nmnoóñ",
+               u"7\npqrs", u"8\ntuvúü", u"9\nwxyz", "0", "#\nespacio",
                "Borrar", "Arriba", "Abajo", "Agregar\nPalabra", "Enviar"]
 
     def __init__(self):

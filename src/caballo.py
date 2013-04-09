@@ -3,7 +3,6 @@ Created on 05/04/2013
 
 @author: sebastiang
 '''
-import random
 
 llamadas = 0
 from Queue import PriorityQueue
@@ -35,13 +34,12 @@ class cobayo_handler():
         return posibles_movimientos
 
     def calcular_posicion(self, pos, i):
-        random.shuffle(self.movimientos)
         cola = PriorityQueue()
         posibles_movimientos = self.devolver_pos_movs(pos, i)
         if not posibles_movimientos:
             return None
         for item in posibles_movimientos:
-            prioridad = 100
+            prioridad = 0
             x = item[0]
             y = item[1]
 #            if pos[0] == 8 or pos[0] == 1:
@@ -59,13 +57,22 @@ class cobayo_handler():
 #                if (x == 4 or x == 5) and\
 #                   (y == 4 or y == 5):
 #                    prioridad -= 20
-#            prox_pos = self.devolver_pos_movs((x, y), i + 1)
-#            for element in prox_pos:
-#                prox_prox_pos = self.devolver_pos_movs(element, i + 2)
-#                for i in range(len(prox_prox_pos)):
-#                    prioridad += 5
-#            for i in range(len(prox_pos)):
-#                prioridad += 10
+            self.escribir_listas(i + 1)
+            self.escribir_listas(i + 2)
+            self.movimientos_prohibidos[i + 1].append((x, y))
+            prox_pos = self.devolver_pos_movs((x, y), i + 1)
+            for element in prox_pos:
+                self.movimientos_prohibidos[i + 2].append(element)
+                prox_prox_pos = self.devolver_pos_movs(element, i + 2)
+                if len(prox_prox_pos) < 1:
+                    prioridad += 100
+                for tuplas in range(len(prox_prox_pos)):
+                    prioridad += 1
+            for tupla in range(len(prox_pos)):
+                if tupla:
+                    prioridad += 2
+            self.movimientos_prohibidos[i + 1] = \
+            self.movimientos_prohibidos[i + 2] = []
 #            if x == 1 or x == 8:
 #                prioridad -= 10
 #            if pos[0] == 2:
@@ -80,19 +87,20 @@ class cobayo_handler():
 #            if pos[1] == 7:
 #                if y == 1 or y == 8:
 #                    prioridad -= 10
-            if y == 1 or y == 8:
-                prioridad -= 10
-            if x == 1 or x == 8:
-                prioridad -= 10
-            if x == 2 or x == 7:
-                prioridad -= 5
-            if y == 2 or y == 7:
-                prioridad -= 5
-            if x == 3 or x == 5:
-                prioridad -= 1
-            if y == 3 or y == 5:
-                prioridad -= 1
+#            if y == 1 or y == 8:
+#                prioridad -= 10
+#            if x == 1 or x == 8:
+#                prioridad -= 10
+#            if x == 2 or x == 7:
+#                prioridad -= 5
+#            if y == 2 or y == 7:
+#                prioridad -= 5
+#            if x == 3 or x == 5:
+#                prioridad -= 1
+#            if y == 3 or y == 5:
+#                prioridad -= 1
             cola.put((prioridad, item))
+#        print cola.queue
         return cola.get()[1]
 
     def hacer_movimiento(self, pos_inicial):
@@ -105,19 +113,12 @@ class cobayo_handler():
         i = 0
 
         while True:
-            if len(self.lista_movs) > len(self.lista_max):
-                self.lista_max = self.lista_movs[:]
-            if not i in self.movimientos_prohibidos.keys():
-                self.movimientos_prohibidos[i] = []
-            for item in self.lista_movs:
-                if i in self.movimientos_prohibidos.keys():
-                    if not item in self.movimientos_prohibidos[i]:
-                        self.movimientos_prohibidos[i].append(item)
+            self.escribir_listas(i)
             self.pos_futura = self.calcular_posicion(self.pos_actual, i)
             if not self.pos_futura:
                 if i - 1 in self.movimientos_prohibidos.keys():
                     self.movimientos_prohibidos[i - 1].append(self.pos_actual)
-                if self.llamadas <= 50:
+                if self.llamadas <= 10:
                     self.movs_anteriores = self.lista_movs[:]
                     return self.hacer_movimiento(pos_inicial)
                 else:
@@ -130,6 +131,16 @@ class cobayo_handler():
                 self.pos_actual = self.pos_futura
                 continue
         return self.lista_max
+
+    def escribir_listas(self, i):
+        if len(self.lista_movs) > len(self.lista_max):
+            self.lista_max = self.lista_movs[:]
+        if not i in self.movimientos_prohibidos.keys():
+            self.movimientos_prohibidos[i] = []
+        for item in self.lista_movs:
+            if i in self.movimientos_prohibidos.keys():
+                if not item in self.movimientos_prohibidos[i]:
+                    self.movimientos_prohibidos[i].append(item)
 
 lista_cant_mov = []
 for x in range(8):
